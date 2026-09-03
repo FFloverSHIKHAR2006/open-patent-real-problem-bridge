@@ -48,6 +48,9 @@ Allow users to provide an existing idea/prototype and discover relevant prior ar
 ### FR-13 — Impact Statement
 Include a concise real-world impact explanation.
 
+### FR-14 — Environment-Aware API Decoupling
+Support independent deployment topologies (e.g. static CDN on Vercel connecting to a containerized or serverless FastAPI backend) via centralized environment variable configuration (`VITE_API_URL`) while preserving local development proxying.
+
 ## Non-Functional Requirements
 
 - Accuracy

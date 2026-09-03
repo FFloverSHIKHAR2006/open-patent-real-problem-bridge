@@ -25,6 +25,7 @@ Curated & Dynamic Retrieval Sources:
 
 - **Framework**: Vite + React
 - **Styling**: Modern Vanilla CSS (Design system with HSL variables, dark glassmorphism, responsive CSS grid/flexbox)
+- **API Client**: Centralized environment-aware configuration (`VITE_API_URL`), enabling seamless transitions between local development (Vite dev proxy) and production CDN deployments (Vercel) connecting to deployed FastAPI services.
 - **Icons & Graphics**: SVG dynamic icons & Mermaid/SVG canvas graph visualizations
 
 ## Search & Embeddings

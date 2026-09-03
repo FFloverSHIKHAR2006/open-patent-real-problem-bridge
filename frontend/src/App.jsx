@@ -5,6 +5,7 @@ import EvidenceGraphViewer from './components/EvidenceGraphViewer';
 import ReverseSearchForm from './components/ReverseSearchForm';
 import DemandSignalBoard from './components/DemandSignalBoard';
 import ApiExplorer from './components/ApiExplorer';
+import { API_ENDPOINTS } from './config/api';
 
 const PROGRESS_STAGES = [
   'Understanding problem & operational context...',
@@ -55,7 +56,7 @@ export default function App() {
     setSearchResponse(null);
 
     try {
-      const res = await fetch('/api/search', {
+      const res = await fetch(API_ENDPOINTS.search, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputData),
@@ -79,7 +80,7 @@ export default function App() {
   const handleReverseSearch = async (inputData) => {
     setReverseLoading(true);
     try {
-      const res = await fetch('/api/prior-art', {
+      const res = await fetch(API_ENDPOINTS.priorArt, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputData),
