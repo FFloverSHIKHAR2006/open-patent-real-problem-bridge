@@ -72,13 +72,6 @@ Produces the final explanation and prototype recipe.
 ### 10. Validation Engine
 Checks generated output against retrieved evidence.
 
-### 11. Client-Server API Architecture
-Decoupled frontend-backend communication using centralized endpoint mapping:
-- **Base URL**: Driven by `VITE_API_URL` environment variable.
-- **Local Development**: When `VITE_API_URL` is omitted, defaults to relative paths using Vite's development proxy to `http://localhost:8000`.
-- **Production (Vercel / Cloud)**: Points directly to the deployed FastAPI service (e.g. on Render, Railway, AWS, Fly.io) with cross-origin resource sharing (CORS) enabled, avoiding reliance on static hosting proxy rewrites.
-
 ## Design Principle
 
 Every generated technical recommendation should have a traceable evidence path.
-

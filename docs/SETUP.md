@@ -43,19 +43,7 @@ cd frontend
 
 # Install dependencies
 npm install
-
-# (Optional for local dev) Configure frontend environment:
-# If connecting directly to a remote backend instead of local Vite proxy:
-cp .env.example .env
-# Set VITE_API_URL=http://localhost:8000 (or your deployed FastAPI backend URL on Vercel)
 ```
-
-## Production Deployment (Vercel)
-
-When deploying the frontend to Vercel:
-1. Set the Environment Variable in your Vercel Project Settings:
-   - `VITE_API_URL`: URL of your deployed FastAPI backend (e.g. `https://your-backend.onrender.com`)
-2. Deploy as a standard Vite project (Build Command: `npm run build`, Output Directory: `dist`).
 
 ## Running the Application
 

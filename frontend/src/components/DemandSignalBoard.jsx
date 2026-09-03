@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { API_ENDPOINTS } from '../config/api';
 
 export default function DemandSignalBoard() {
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(API_ENDPOINTS.demandSignals)
+    fetch('/api/demand-signals')
       .then((res) => res.json())
       .then((data) => {
         setSignals(data);
