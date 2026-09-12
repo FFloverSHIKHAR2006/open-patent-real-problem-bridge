@@ -1,10 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  Search,
+  ShieldCheck,
+  GitFork,
+  BarChart3,
+  Code2,
+  Sparkles,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle,
+  Database,
+  Lock,
+  Cpu
+} from 'lucide-react';
 import ProblemInputForm from './components/ProblemInputForm';
 import SolutionResultView from './components/SolutionResultView';
 import EvidenceGraphViewer from './components/EvidenceGraphViewer';
 import ReverseSearchForm from './components/ReverseSearchForm';
 import DemandSignalBoard from './components/DemandSignalBoard';
 import ApiExplorer from './components/ApiExplorer';
+import { API_BASE } from './config';
 
 const PROGRESS_STAGES = [
   'Understanding problem & operational context...',
@@ -21,6 +36,7 @@ export default function App() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [searchResponse, setSearchResponse] = useState(null);
   const [searchError, setSearchError] = useState(null);
+  const [seededQuery, setSeededQuery] = useState(null);
 
   // Reverse search state
   const [reverseLoading, setReverseLoading] = useState(false);
@@ -54,12 +70,17 @@ export default function App() {
     setSearchError(null);
     setSearchResponse(null);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
     try {
-      const res = await fetch('/api/search', {
+      const res = await fetch(`${API_BASE}/api/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputData),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -69,8 +90,13 @@ export default function App() {
       data.problem_input = inputData;
       setSearchResponse(data);
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error('Search error:', err);
-      setSearchError(err.message || 'Failed to connect to search engine backend.');
+      if (err.name === 'AbortError') {
+        setSearchError('Search request timed out after 25s. The backend took too long to respond.');
+      } else {
+        setSearchError(err.message || 'Failed to connect to search engine backend.');
+      }
     } finally {
       setLoading(false);
     }
@@ -79,7 +105,7 @@ export default function App() {
   const handleReverseSearch = async (inputData) => {
     setReverseLoading(true);
     try {
-      const res = await fetch('/api/prior-art', {
+      const res = await fetch(`${API_BASE}/api/prior-art`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(inputData),
@@ -102,56 +128,111 @@ export default function App() {
     }
   };
 
+  const handleSeedFromDemand = (demand) => {
+    setSeededQuery({
+      problem: demand.problem_topic + ': ' + demand.underlying_unmet_mechanism,
+      desiredOutcome: 'Overcome ' + demand.underlying_unmet_mechanism + ' for ' + demand.affected_sectors.join(', '),
+      domain: demand.affected_sectors[0] || 'General Engineering',
+    });
+    setActiveTab('search');
+    setTimeout(() => {
+      if (formRef.current) {
+        formRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="app-container">
-      {/* Header Bar */}
-      <header className="glass-panel header-bar">
+      {/* FSLAB Enterprise Header */}
+      <header className="header-bar">
         <div className="brand-logo">
-          <div className="brand-icon">⚡</div>
+          <div className="brand-icon-wrap">
+            <span>F</span>
+          </div>
           <div>
-            <div className="brand-title">Open-Patent to Real Problem Bridge</div>
-            <div className="brand-subtitle">An Open Innovation Matching & Technical Translation Engine</div>
+            <div className="brand-title">
+              BRIDGE<span style={{ color: 'var(--accent-blue)' }}>.LAB</span>
+              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--accent-blue)', background: 'var(--accent-blue-subtle)', border: '1px solid var(--accent-blue-border)', padding: '2px 6px', borderRadius: '4px', marginLeft: '4px' }}>
+                AI GOVERNANCE
+              </span>
+            </div>
+            <div className="brand-subtitle">AI Intelligence & Public Patent Verification Engine</div>
           </div>
         </div>
-        <div className="category-badge">Open Innovation / AI Research</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="header-status">
+            <span className="status-dot"></span>
+            <span>Zero Hallucinations Verified</span>
+          </div>
+          <button
+            type="button"
+            className="btn-primary"
+            style={{ padding: '7px 14px', fontSize: 'var(--text-xs)' }}
+            onClick={() => setActiveTab('api')}
+          >
+            API Access
+          </button>
+        </div>
       </header>
 
-      {/* Navigation Tab Bar */}
-      <nav className="nav-tabs">
+      {/* FSLAB Dark Contrast Ticker Strip */}
+      <div className="contrast-ticker">
+        <div className="ticker-item">
+          <span className="ticker-badge">PROVENANCE</span>
+          <span>Every recommendation grounded in <strong>USPTO, NASA & Google Patents</strong></span>
+        </div>
+        <div className="ticker-item">
+          <Database size={14} color="#60a5fa" />
+          <span>Mechanistic Matching: <strong>Physical & Chemical Invariants</strong></span>
+        </div>
+        <div className="ticker-item">
+          <Lock size={14} color="#34d399" />
+          <span>Enterprise Compliance: <strong>Prior-Art Risk & Freedom-to-Operate</strong></span>
+        </div>
+      </div>
+
+      {/* Navigation Segmented Control */}
+      <nav className="nav-tabs" aria-label="Main Navigation">
         <button
           type="button"
           className={`tab-btn ${activeTab === 'search' ? 'active' : ''}`}
           onClick={() => setActiveTab('search')}
         >
-          🚀 Problem Bridge Search
+          <Search size={15} />
+          Problem Bridge
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'reverse' ? 'active' : ''}`}
           onClick={() => setActiveTab('reverse')}
         >
-          🔍 Reverse Prior-Art Validator
+          <ShieldCheck size={15} />
+          Prior-Art Validator
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'evidence' ? 'active' : ''}`}
           onClick={() => setActiveTab('evidence')}
         >
-          🕸️ Evidence Provenance Graph
+          <GitFork size={15} />
+          Provenance Graph
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'demand' ? 'active' : ''}`}
           onClick={() => setActiveTab('demand')}
         >
-          📊 Demand Signals
+          <BarChart3 size={15} />
+          Demand Signals
         </button>
         <button
           type="button"
           className={`tab-btn ${activeTab === 'api' ? 'active' : ''}`}
           onClick={() => setActiveTab('api')}
         >
-          ⚡ API Explorer
+          <Code2 size={15} />
+          API Explorer
         </button>
       </nav>
 
@@ -159,17 +240,22 @@ export default function App() {
       {activeTab === 'search' && (
         <div>
           <div ref={formRef}>
-            <ProblemInputForm onSearch={handleSearch} loading={loading} />
+            <ProblemInputForm
+              onSearch={handleSearch}
+              loading={loading}
+              seededData={seededQuery}
+            />
           </div>
 
           {/* Loading Progress State */}
           {loading && (
             <div className="glass-panel progress-container animate-fade-in">
-              <div style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--accent-cyan-light)', marginBottom: '8px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--accent-blue)', marginBottom: '4px' }}>
+                <RefreshCw size={16} className="animate-spin" />
                 {PROGRESS_STAGES[loadingStep]}
               </div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                Step {loadingStep + 1} of {PROGRESS_STAGES.length} • Grounding against verified patent disclosures
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
+                Stage {loadingStep + 1} of {PROGRESS_STAGES.length} • Grounding against verified patent disclosures
               </div>
 
               <div className="progress-steps">
@@ -179,7 +265,7 @@ export default function App() {
                   return (
                     <div key={idx} className="progress-step-item">
                       <div className={`progress-step-circle ${isDone ? 'completed' : isCurrent ? 'active' : ''}`}>
-                        {isDone ? '✓' : idx + 1}
+                        {isDone ? <CheckCircle2 size={14} /> : idx + 1}
                       </div>
                       <div className="progress-step-label">
                         {idx === 0 && 'Problem'}
@@ -201,14 +287,21 @@ export default function App() {
             <div
               className="glass-panel animate-fade-in"
               style={{
-                marginTop: '20px',
-                padding: '16px 20px',
+                marginTop: '16px',
+                padding: '14px 18px',
                 borderLeft: '4px solid var(--accent-rose)',
-                background: 'rgba(244, 63, 94, 0.1)',
-                color: '#fecdd3',
+                background: 'var(--accent-rose-subtle)',
+                color: '#9f1239',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                fontSize: 'var(--text-sm)'
               }}
             >
-              <strong>Error: </strong> {searchError}
+              <AlertCircle size={18} color="var(--accent-rose)" />
+              <div>
+                <strong>Error: </strong> {searchError}
+              </div>
             </div>
           )}
 
@@ -240,7 +333,9 @@ export default function App() {
       )}
 
       {/* Tab 4: Demand Signals */}
-      {activeTab === 'demand' && <DemandSignalBoard />}
+      {activeTab === 'demand' && (
+        <DemandSignalBoard onSeedProblem={handleSeedFromDemand} />
+      )}
 
       {/* Tab 5: API Explorer */}
       {activeTab === 'api' && <ApiExplorer />}

@@ -28,3 +28,6 @@ build/
 
 # Logs
 *.log
+
+# External agency-agents reference repo
+agency-agents/

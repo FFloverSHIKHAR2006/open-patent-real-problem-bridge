@@ -1,6 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { X, Printer, Download, AlertTriangle, CheckCircle2, Wrench, Sparkles, ShieldCheck } from 'lucide-react';
 
 export default function PrototypeRecipeModal({ recipe, onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   if (!recipe) return null;
 
   const handlePrint = () => {
@@ -14,6 +23,7 @@ export default function PrototypeRecipeModal({ recipe, onClose }) {
     a.href = url;
     a.download = `${recipe.recipe_id}_prototype_recipe.json`;
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -24,81 +34,84 @@ export default function PrototypeRecipeModal({ recipe, onClose }) {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'rgba(3, 17, 30, 0.85)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(8px)',
         zIndex: 1000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '20px',
       }}
+      onClick={onClose}
     >
       <div
         className="glass-panel animate-fade-in"
         style={{
-          maxWidth: '900px',
+          maxWidth: '860px',
           width: '100%',
           maxHeight: '90vh',
           overflowY: 'auto',
-          padding: '30px',
-          border: '1px solid var(--accent-cyan)',
+          padding: 'var(--space-lg)',
+          border: '1px solid var(--border-hairline)',
+          background: '#FFFFFF',
+          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+          borderRadius: 'var(--radius-lg)',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-md)' }}>
           <div>
-            <span className="patent-badge" style={{ marginBottom: '6px', display: 'inline-block' }}>
+            <span className="badge-patent" style={{ marginBottom: '6px' }}>
               {recipe.recipe_id}
             </span>
-            <h2 style={{ fontSize: '1.4rem' }}>{recipe.title}</h2>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-              Addressing: "{recipe.problem_addressed}"
+            <h2 style={{ fontSize: 'var(--text-lg)', color: 'var(--text-primary)', marginTop: '2px' }}>{recipe.title}</h2>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
+              Target Need: "{recipe.problem_addressed}"
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--text-muted)',
-              fontSize: '1.6rem',
-              cursor: 'pointer',
-            }}
+            className="btn-ghost"
+            style={{ padding: '6px', borderRadius: '50%' }}
+            aria-label="Close dialog"
           >
-            ×
+            <X size={18} />
           </button>
         </div>
 
         {/* Real-World Impact Statement Banner */}
         <div
           style={{
-            background: 'linear-gradient(90deg, hsla(152, 76%, 48%, 0.15), hsla(187, 85%, 53%, 0.15))',
-            borderLeft: '4px solid var(--accent-emerald)',
-            padding: '14px',
-            borderRadius: '6px',
-            marginBottom: '20px',
+            background: 'var(--accent-emerald-subtle)',
+            border: '1px solid var(--accent-emerald-border)',
+            borderLeft: '3px solid var(--accent-emerald)',
+            padding: '12px 14px',
+            borderRadius: 'var(--radius-sm)',
+            marginBottom: 'var(--space-md)',
           }}
         >
-          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--accent-emerald)', textTransform: 'uppercase' }}>
-            🌍 Real-World Impact Statement:
+          <div style={{ fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--accent-emerald)', textTransform: 'uppercase', letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Sparkles size={12} />
+            Real-World Impact Statement
           </div>
-          <div style={{ fontSize: '0.92rem', color: 'var(--text-main)', marginTop: '4px' }}>
+          <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-primary)', marginTop: '4px', lineHeight: 1.5 }}>
             {recipe.real_world_impact_statement}
           </div>
         </div>
 
-        <div className="grid-2" style={{ marginBottom: '20px' }}>
-          <div style={{ background: 'hsla(222, 47%, 9%, 0.6)', padding: '16px', borderRadius: '10px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)', marginBottom: '8px', textTransform: 'uppercase' }}>
+        <div className="grid-2" style={{ marginBottom: 'var(--space-md)' }}>
+          <div style={{ background: '#F8FAFC', border: '1px solid var(--border-hairline)', padding: '14px', borderRadius: 'var(--radius-sm)' }}>
+            <h4 style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-blue)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
               Underlying Patent Mechanism
             </h4>
-            <p style={{ fontSize: '0.88rem', color: 'var(--text-main)' }}>{recipe.underlying_mechanism}</p>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--text-primary)', lineHeight: 1.5 }}>{recipe.underlying_mechanism}</p>
           </div>
-          <div style={{ background: 'hsla(222, 47%, 9%, 0.6)', padding: '16px', borderRadius: '10px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--accent-purple)', marginBottom: '8px', textTransform: 'uppercase' }}>
+          <div style={{ background: '#F8FAFC', border: '1px solid var(--border-hairline)', padding: '14px', borderRadius: 'var(--radius-sm)' }}>
+            <h4 style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-purple)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 700 }}>
               Source Patent / Technical Disclosures
             </h4>
-            <ul style={{ fontSize: '0.85rem', paddingLeft: '16px', color: 'var(--text-main)' }}>
+            <ul style={{ fontSize: 'var(--text-xs)', paddingLeft: '16px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
               {recipe.source_technologies.map((src, idx) => (
                 <li key={idx}>{src}</li>
               ))}
@@ -107,40 +120,42 @@ export default function PrototypeRecipeModal({ recipe, onClose }) {
         </div>
 
         {/* Bill of Materials Table */}
-        <div style={{ marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '10px', color: 'var(--text-main)' }}>
-            📦 Bill of Materials (BOM) & Local Substitutions
+        <div style={{ marginBottom: 'var(--space-md)' }}>
+          <h3 style={{ fontSize: 'var(--text-md)', marginBottom: '8px', color: 'var(--text-primary)' }}>
+            Bill of Materials (BOM) & Local Substitutions
           </h3>
-          <table className="bom-table">
-            <thead>
-              <tr>
-                <th>Component / Material</th>
-                <th>Purpose</th>
-                <th>Est. Cost</th>
-                <th>Local Field Alternative</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recipe.bill_of_materials.map((item, idx) => (
-                <tr key={idx}>
-                  <td style={{ fontWeight: 600, color: 'var(--accent-cyan)' }}>{item.item}</td>
-                  <td>{item.purpose}</td>
-                  <td>{item.estimated_cost}</td>
-                  <td style={{ color: 'var(--accent-emerald)' }}>{item.local_alternative}</td>
+          <div style={{ overflowX: 'auto', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-xs)' }}>
+              <thead>
+                <tr style={{ background: '#F8FAFC', borderBottom: '1px solid var(--border-hairline)', textAlign: 'left', color: 'var(--text-secondary)' }}>
+                  <th style={{ padding: '8px 12px' }}>Component / Material</th>
+                  <th style={{ padding: '8px 12px' }}>Purpose</th>
+                  <th style={{ padding: '8px 12px' }}>Est. Cost</th>
+                  <th style={{ padding: '8px 12px' }}>Local Field Alternative</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recipe.bill_of_materials.map((item, idx) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <td style={{ padding: '8px 12px', fontWeight: 600, color: 'var(--accent-blue)' }}>{item.item}</td>
+                    <td style={{ padding: '8px 12px', color: 'var(--text-primary)' }}>{item.purpose}</td>
+                    <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>{item.estimated_cost}</td>
+                    <td style={{ padding: '8px 12px', color: 'var(--accent-emerald)', fontWeight: 500 }}>{item.local_alternative}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Step by step build guide */}
-        <div style={{ marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '10px', color: 'var(--text-main)' }}>
-            🛠️ Plain-Language Step-by-Step Prototype Recipe
+        <div style={{ marginBottom: 'var(--space-md)' }}>
+          <h3 style={{ fontSize: 'var(--text-md)', marginBottom: '8px', color: 'var(--text-primary)' }}>
+            Plain-Language Step-by-Step Prototype Recipe
           </h3>
-          <ol className="steps-list">
+          <ol style={{ paddingLeft: '18px', fontSize: 'var(--text-xs)', color: 'var(--text-primary)', lineHeight: 1.6 }}>
             {recipe.step_by_step_instructions.map((step, idx) => (
-              <li key={idx}>
+              <li key={idx} style={{ marginBottom: '4px' }}>
                 <strong>Step {idx + 1}:</strong> {step}
               </li>
             ))}
@@ -148,22 +163,24 @@ export default function PrototypeRecipeModal({ recipe, onClose }) {
         </div>
 
         {/* Constraint Adaptations & Risks */}
-        <div className="grid-2" style={{ marginBottom: '24px' }}>
-          <div style={{ background: 'hsla(38, 92%, 50%, 0.1)', border: '1px solid hsla(38, 92%, 50%, 0.3)', padding: '16px', borderRadius: '10px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--accent-amber)', marginBottom: '8px', textTransform: 'uppercase' }}>
-              ⚠️ Technical Risks & Field Warnings
+        <div className="grid-2" style={{ marginBottom: 'var(--space-md)' }}>
+          <div style={{ background: 'var(--accent-amber-subtle)', border: '1px solid var(--accent-amber-border)', borderLeft: '3px solid var(--accent-amber)', padding: '12px', borderRadius: 'var(--radius-sm)' }}>
+            <h4 style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-amber)', marginBottom: '6px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}>
+              <AlertTriangle size={13} />
+              Technical Risks & Field Warnings
             </h4>
-            <ul style={{ fontSize: '0.82rem', paddingLeft: '16px', color: 'var(--text-main)' }}>
+            <ul style={{ fontSize: 'var(--text-xs)', paddingLeft: '16px', color: 'var(--text-primary)', lineHeight: 1.5 }}>
               {recipe.risk_factors.map((risk, idx) => (
                 <li key={idx}>{risk}</li>
               ))}
             </ul>
           </div>
-          <div style={{ background: 'hsla(187, 85%, 53%, 0.1)', border: '1px solid hsla(187, 85%, 53%, 0.3)', padding: '16px', borderRadius: '10px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--accent-cyan)', marginBottom: '8px', textTransform: 'uppercase' }}>
-              ⚙️ Applied Constraint Adaptations
+          <div style={{ background: 'var(--accent-blue-subtle)', border: '1px solid var(--accent-blue-border)', borderLeft: '3px solid var(--accent-blue)', padding: '12px', borderRadius: 'var(--radius-sm)' }}>
+            <h4 style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-blue)', marginBottom: '6px', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}>
+              <Wrench size={13} />
+              Applied Constraint Adaptations
             </h4>
-            <ul style={{ fontSize: '0.82rem', paddingLeft: '16px', color: 'var(--text-main)' }}>
+            <ul style={{ fontSize: 'var(--text-xs)', paddingLeft: '16px', color: 'var(--text-primary)', lineHeight: 1.5 }}>
               {recipe.constraint_adaptations.map((adapt, idx) => (
                 <li key={idx}>{adapt}</li>
               ))}
@@ -171,32 +188,19 @@ export default function PrototypeRecipeModal({ recipe, onClose }) {
           </div>
         </div>
 
-        {/* Evidence Provenance Footer */}
-        {recipe.evidence_provenance && recipe.evidence_provenance.length > 0 && (
-          <div style={{ background: 'var(--bg-glass)', border: '1px solid var(--border-color)', padding: '16px', borderRadius: '10px', marginBottom: '24px' }}>
-            <h4 style={{ fontSize: '0.85rem', color: 'var(--accent-purple)', marginBottom: '8px', textTransform: 'uppercase' }}>
-              📜 Verified Evidence Provenance Track
-            </h4>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              <strong>Patent Claim Quote:</strong> "{recipe.evidence_provenance[0].claim_or_finding}"
-              <br />
-              <span style={{ color: 'var(--accent-cyan)' }}>
-                Source: {recipe.evidence_provenance[0].source} ({recipe.evidence_provenance[0].patent_or_paper_id}), Section: {recipe.evidence_provenance[0].section}
-              </span>
-            </div>
+        {/* Action Footer */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px', borderTop: '1px solid var(--border-hairline)', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-secondary)' }}>
+            Feasibility: <strong style={{ color: 'var(--accent-emerald)' }}>{recipe.feasibility_score}/100</strong> • Confidence: <strong style={{ color: 'var(--accent-blue)' }}>{Math.round(recipe.confidence_score * 100)}%</strong>
           </div>
-        )}
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            Feasibility Score: <span style={{ fontWeight: 700, color: 'var(--accent-emerald)' }}>{recipe.feasibility_score}/100</span> | Confidence: <span style={{ fontWeight: 700, color: 'var(--accent-cyan)' }}>{Math.round(recipe.confidence_score * 100)}%</span>
-          </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             <button type="button" onClick={handleExportJSON} className="btn-secondary">
-              📥 Export JSON
+              <Download size={13} />
+              Export JSON
             </button>
             <button type="button" onClick={handlePrint} className="btn-primary">
-              🖨️ Print / Save PDF
+              <Printer size={13} />
+              Print / Save PDF
             </button>
           </div>
         </div>
