@@ -9,7 +9,8 @@
 - **Authentic Elder-Care Ground-Truth Corpus**: Added verified USPTO patents (`US-PAT-7733224-B2`, `US-PAT-7158011-B2`, `US-PAT-7138902-B2`) and peer-reviewed papers (`PAPER-10.1007/s11042-018-7134-7`, `PAPER-10.1007/s12652-017-0598-x`) with active Google Patents and DOI URLs.
 - **Outcome Estimation Engine**: Classified expected outcomes into 5 certainty tiers with zero fabricated quantitative metrics and rigorous citation attribution.
 - **Modular Backend Endpoints**: Added dedicated routes for `/api/problem/analyze`, `/api/search/patents`, `/api/search/research`, `/api/match/mechanisms`, `/api/generate/solution`, `/api/generate/outcomes`, and `/api/validate/evidence`.
-- **Automated Test Expansion**: Added tests for outcome engine and end-to-end elder care scenario; expanded suite to 21 passing pytest tests.
+- **Root & API Health Check Routes**: Added `/health` and enhanced `/api/health` endpoints returning service status, version, environment, and corpus verification metadata for cloud orchestrators and uptime monitors.
+- **Automated Test Expansion**: Added tests for outcome engine and end-to-end elder care scenario; expanded suite to 28 passing pytest tests.
 
 ## [1.0.0] - 2026-09-03
 

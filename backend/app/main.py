@@ -101,8 +101,26 @@ def root():
     return {
         "message": "Welcome to Open-Patent to Real Problem Bridge API",
         "docs": "/docs",
-        "health": f"{settings.API_V1_STR}/health",
+        "health": "/health",
+        "api_health": f"{settings.API_V1_STR}/health",
         "frontend_status": "Built frontend not found. Run 'npm run build' in frontend/ to bundle the UI."
+    }
+
+
+@app.get("/health", summary="Application health check endpoint")
+def health_check():
+    """
+    Root-level health check endpoint for container orchestrators, load balancers, and monitors.
+    """
+    from app.db.patent_corpus import get_all_patents
+    patents = get_all_patents()
+    return {
+        "status": "healthy",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
+        "corpus_loaded": len(patents) > 0,
+        "patents_count": len(patents)
     }
 
 
@@ -123,8 +141,8 @@ async def serve_spa_fallback(full_path: str):
     SPA catch-all route: serves static files or index.html for client-side routing,
     while safeguarding API and documentation routes.
     """
-    # Safeguard API endpoints and documentation from catch-all
-    if full_path.startswith("api") or full_path in ("docs", "redoc", "openapi.json"):
+    # Safeguard API endpoints, health check, and documentation from catch-all
+    if full_path.startswith("api") or full_path in ("docs", "redoc", "openapi.json", "health"):
         raise HTTPException(status_code=404, detail=f"Endpoint '/{full_path}' not found.")
 
     dist_path = get_frontend_dist_path()

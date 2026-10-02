@@ -13,6 +13,21 @@ def test_health_check_endpoint():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
+    assert data["service"] == "Open-Patent to Real Problem Bridge"
+    assert data["version"] == "1.1.0"
+    assert data["corpus_loaded"] is True
+    assert data["patents_count"] >= 5
+
+
+def test_root_health_check_endpoint():
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "Open-Patent to Real Problem Bridge"
+    assert data["version"] == "1.1.0"
+    assert data["corpus_loaded"] is True
+    assert data["patents_count"] >= 5
 
 
 def test_list_patents_endpoint():

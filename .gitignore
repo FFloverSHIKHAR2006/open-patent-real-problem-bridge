@@ -31,3 +31,7 @@ build/
 
 # External agency-agents reference repo
 agency-agents/
+
+# Temporary tools & archives
+aws/
+*.zip

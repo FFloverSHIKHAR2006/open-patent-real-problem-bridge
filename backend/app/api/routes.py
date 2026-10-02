@@ -20,6 +20,7 @@ from app.services.solution_builder import build_structured_solution
 from app.services.outcome_engine import generate_expected_outcomes
 from app.services.evidence_validator import build_verified_evidence_items, validate_source
 from app.db.patent_corpus import get_all_patents, get_patent_by_id
+from app.config import settings
 
 router = APIRouter()
 
@@ -203,8 +204,15 @@ def get_patent(patent_id: str):
 
 @router.get("/health", summary="Health check endpoint")
 def health_check():
+    """
+    API health check endpoint.
+    """
+    patents = get_all_patents()
     return {
         "status": "healthy",
-        "service": "Open-Patent to Real Problem Bridge API",
-        "version": "1.1.0"
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
+        "corpus_loaded": len(patents) > 0,
+        "patents_count": len(patents)
     }
